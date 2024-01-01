@@ -20,7 +20,7 @@ pipeline{
         }
         stage('Checkout from Git'){
             steps{
-                git branch: 'main', url: 'https://github.com/Aj7Ay/Youtube-clone-app.git'
+                git branch: 'main', url: 'https://github.com/Anandreddy125/Youtube-clone-app.git'
             }
         }
         stage("Sonarqube Analysis "){
@@ -34,7 +34,7 @@ pipeline{
         stage("quality gate"){
            steps {
                 script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token' 
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar' 
                 }
             } 
         }
@@ -59,20 +59,20 @@ pipeline{
                 script{
                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){   
                        sh "docker build --build-arg REACT_APP_RAPID_API_KEY=f0ead79813ms -t youtube ."
-                       sh "docker tag youtube sevenajay/youtube:latest "
-                       sh "docker push sevenajay/youtube:latest "
+                       sh "docker tag youtube anrs125y/youtube:latest "
+                       sh "docker push anrs125/youtube:latest "
                     }
                 }
             }
         }
         stage("TRIVY"){
             steps{
-                sh "trivy image sevenajay/youtube:latest > trivyimage.txt" 
+                sh "trivy image anrs125/youtube:latest > trivyimage.txt" 
             }
         }
         stage('Deploy to container'){
             steps{
-                sh 'docker run -d --name youtube1 -p 3000:3000 sevenajay/youtube:latest'
+                sh 'docker run -d --name youtube1 -p 3000:3000 anrs125/youtube:latest'
             }
         }
         stage('Deploy to kubernets'){
